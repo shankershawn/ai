@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: ai
+    type: NONE
+  ai:
+    openai:
+       api-key: dummy # as this is hosted by local LMS
+       base-url: http://localhost:1234
+       chat:
+         options:
+           model:
+            - text-embedding-nomic-embed-text-v1.5
+            - gemma-4-e4b
+  #r2dbc:
+  datasource:
+      url: jdbc:postgresql://localhost:5432/myvdb
+      username: admin
+      password: Sun1!america

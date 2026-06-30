@@ -1,7 +1,6 @@
 spring:
   application:
     name: ai
-    type: NONE
   ai:
     openai:
        api-key: dummy # as this is hosted by local LMS
@@ -11,6 +10,13 @@ spring:
            model:
             - text-embedding-nomic-embed-text-v1.5
             - gemma-4-e4b
+    vectorstore:
+      pgvector:
+        embedding-dimension: 768
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        initialize-schema: true
+        content-size: 100000
   #r2dbc:
   datasource:
       url: jdbc:postgresql://localhost:5432/myvdb

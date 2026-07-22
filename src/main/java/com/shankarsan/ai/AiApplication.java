@@ -33,9 +33,8 @@ public class AiApplication {
   ApplicationRunner applicationRunner() {
     return args -> {
       List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
-      CompletableFuture.runAsync(() -> {});
 
-      for(int i = 0; i < 8; i++) {
+      for(int i = 0; i < 100; i++) {
         log.info("Calling OpenAI for the {} time", i + 1);
         completableFutures.add(CompletableFuture.runAsync(() -> {
           String response = openAiChatModel.call("What is survivorship bias?");

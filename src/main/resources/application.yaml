@@ -20,5 +20,5 @@ spring:
   #r2dbc:
   datasource:
       url: jdbc:postgresql://localhost:5432/myvdb
-      username: admin
-      password: Sun1!america
+      username: ${DB_USERNAME}
+      password: ${DB_PASSWORD}

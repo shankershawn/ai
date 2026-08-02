@@ -2,14 +2,25 @@ spring:
   application:
     name: ai
   ai:
+    retry:
+      max-attempts: 2
+      on-client-errors: false
+      # Empty means retry on transient/server failures only (4xx not retried by default).
+      on-http-codes: []
+      exclude-on-http-codes: []
+      backoff:
+        initial-interval: 1s
+        multiplier: 2
+        max-interval: 10s
     openai:
-       api-key: dummy # as this is hosted by local LMS
-       base-url: http://localhost:1234
-       chat:
-         options:
-           model:
-            - text-embedding-nomic-embed-text-v1.5
-            - gemma-4-e4b
+      api-key: dummy # as this is hosted by local LMS
+      base-url: http://localhost:1234
+      chat:
+        options:
+          model: google/gemma-4-e4b
+      embedding:
+        options:
+          model: text-embedding-nomic-embed-text-v1.5
     vectorstore:
       pgvector:
         embedding-dimension: 768
@@ -17,8 +28,8 @@ spring:
         distance-type: COSINE_DISTANCE
         initialize-schema: true
         content-size: 100000
-  #r2dbc:
   datasource:
-      url: jdbc:postgresql://localhost:5432/myvdb
-      username: ${DB_USERNAME}
-      password: ${DB_PASSWORD}
+    # Use environment variables for JDBC URL, username and password.
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/myvdb}
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}

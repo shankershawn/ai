@@ -20,19 +20,48 @@ repositories {
 
 ext {
 	set('springAiVersion', "1.0.0-M1")
+	set('cucumberVersion', "7.18.1")
 }
+
+sourceSets {
+	featureTest {
+		java {
+			srcDirs = ['src/main/feature-test/java']
+		}
+		resources {
+			srcDirs = ['src/main/feature-test/resources']
+		}
+		compileClasspath += sourceSets.main.output + configurations.testCompileClasspath
+		runtimeClasspath += output + compileClasspath + configurations.testRuntimeClasspath
+	}
+}
+
+configurations {
+	featureTestImplementation.extendsFrom testImplementation
+	featureTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
 dependencies {
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
-	implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector:1.1.6'
+	implementation 'org.springframework.ai:spring-ai-pgvector-store-spring-boot-starter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
+	testRuntimeOnly 'com.h2database:h2'
 
+	featureTestImplementation platform("io.cucumber:cucumber-bom:${cucumberVersion}")
+	featureTestImplementation 'io.cucumber:cucumber-java'
+	featureTestImplementation 'io.cucumber:cucumber-spring'
+	featureTestImplementation 'io.cucumber:cucumber-junit-platform-engine'
+	featureTestImplementation 'org.junit.platform:junit-platform-suite'
+	featureTestRuntimeOnly 'com.h2database:h2'
+	featureTestCompileOnly 'org.projectlombok:lombok'
+	featureTestAnnotationProcessor 'org.projectlombok:lombok'
+}
 
 dependencyManagement {
 	imports {
@@ -43,3 +72,15 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.register('featureTest', Test) {
+	description = 'Runs Cucumber feature tests'
+	group = 'verification'
+	testClassesDirs = sourceSets.featureTest.output.classesDirs
+	classpath = sourceSets.featureTest.runtimeClasspath
+	useJUnitPlatform()
+	shouldRunAfter test
+	systemProperty 'cucumber.junit-platform.naming-strategy', 'long'
+}
+
+check.dependsOn featureTest

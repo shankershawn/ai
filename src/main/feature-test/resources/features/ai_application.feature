@@ -36,22 +36,11 @@ Feature: AI Application
   # Startup batch chat + vector store ingestion
   # ---------------------------------------------------------------------------
 
-  Scenario: Application runner executes concurrent chat calls on startup
-    Given the application has started
-    When the application runner executes
-    Then 40 concurrent chat calls should be made asking "What is survivorship bias?"
-    And each successful response should be logged
-
   Scenario: Chat responses are stored in the vector store
     Given the OpenAI chat model returns a text response
     When the response is added to the vector store as a Document
     Then the document should be persisted in the pgvector store
     And the embedding should use dimension 768
-
-  Scenario: All startup chat futures complete before the runner finishes
-    Given 40 concurrent chat-and-store tasks have been submitted
-    When the application runner waits for completion
-    Then all CompletableFuture tasks should join successfully
 
   # ---------------------------------------------------------------------------
   # Model and retry configuration

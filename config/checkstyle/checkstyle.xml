@@ -5,10 +5,12 @@
 <module name="Checker">
   <property name="severity" value="warning"/>
   <property name="fileExtensions" value="java, properties, xml"/>
+  <module name="SuppressWarningsFilter" />
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>
   </module>
   <module name="TreeWalker">
+    <module name="SuppressWarningsHolder" />
     <module name="AbbreviationAsWordInName">
       <property name="ignoreFinal" value="false"/>
       <property name="allowedAbbreviationLength" value="1"/>
@@ -105,7 +107,6 @@
     <module name="SingleSpaceSeparator"/>
     <module name="StaticVariableName"/>
     <module name="StringLiteralEquality"/>
-    <module name="SuppressWarningsHolder"/>
     <module name="ThrowsCount">
       <property name="max" value="4"/>
     </module>

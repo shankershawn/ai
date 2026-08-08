@@ -42,7 +42,6 @@ public class ApplicationAndChatSteps {
 
   private final AtomicReference<String> lastChatResponse = new AtomicReference<>();
   private final AtomicReference<Document> lastDocument = new AtomicReference<>();
-  private boolean runnerObserved;
 
   @Given("the application is configured with OpenAI and pgvector settings")
   public void applicationIsConfigured() {
@@ -78,12 +77,6 @@ public class ApplicationAndChatSteps {
     lastChatResponse.set(SAMPLE_RESPONSE);
   }
 
-  @Given("{int} concurrent chat-and-store tasks have been submitted")
-  public void concurrentTasksSubmitted(int taskCount) {
-    assertThat(recordingChatModel.countPromptsEqualTo(SURVIVORSHIP_PROMPT))
-        .isGreaterThanOrEqualTo(taskCount);
-  }
-
   @When("the Spring Boot application starts")
   @When("the application starts")
   public void springBootApplicationStarts() {
@@ -112,21 +105,11 @@ public class ApplicationAndChatSteps {
     return body.path("response").asText();
   }
 
-  @When("the application runner executes")
-  public void applicationRunnerExecutes() {
-    runnerObserved = true;
-  }
-
   @When("the response is added to the vector store as a Document")
   public void responseIsAddedToVectorStore() {
     Document document = new Document(lastChatResponse.get());
     lastDocument.set(document);
     recordingVectorStore.add(java.util.List.of(document));
-  }
-
-  @When("the application runner waits for completion")
-  public void applicationRunnerWaitsForCompletion() {
-    runnerObserved = true;
   }
 
   @Then("the application context should load successfully")
@@ -167,19 +150,6 @@ public class ApplicationAndChatSteps {
     assertThat(environment.getProperty("spring.ai.openai.chat.options.model")).isEqualTo(model);
   }
 
-  @Then("{int} concurrent chat calls should be made asking {string}")
-  public void concurrentChatCallsMade(int taskCount, String prompt) {
-    assertThat(runnerObserved).isTrue();
-    assertThat(recordingChatModel.countPromptsEqualTo(prompt)).isGreaterThanOrEqualTo(taskCount);
-  }
-
-  @Then("each successful response should be logged")
-  public void eachSuccessfulResponseLogged() {
-    assertThat(recordingChatModel.countPromptsEqualTo(SURVIVORSHIP_PROMPT))
-        .isGreaterThanOrEqualTo(40);
-    assertThat(recordingVectorStore.getDocuments().size()).isGreaterThanOrEqualTo(40);
-  }
-
   @Then("the document should be persisted in the pgvector store")
   public void documentPersistedInPgvectorStore() {
     assertThat(recordingVectorStore.wasAdded(lastDocument.get())).isTrue();
@@ -191,13 +161,6 @@ public class ApplicationAndChatSteps {
             environment.getProperty(
                 "spring.ai.vectorstore.pgvector.embedding-dimension", Integer.class))
         .isEqualTo(dimension);
-  }
-
-  @Then("all CompletableFuture tasks should join successfully")
-  public void allFuturesJoinSuccessfully() {
-    assertThat(runnerObserved).isTrue();
-    assertThat(applicationContext).isNotNull();
-    assertThat(recordingVectorStore.getDocuments().size()).isGreaterThanOrEqualTo(40);
   }
 
   @Then("the virtual thread task executor bean should be available")

@@ -1,5 +1,10 @@
 package com.shankarsan.ai.feature.steps;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shankarsan.ai.feature.support.RecordingChatModel;
@@ -7,6 +12,7 @@ import com.shankarsan.ai.feature.support.RecordingVectorStore;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -16,36 +22,23 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 public class ApplicationAndChatSteps {
 
   private static final String SURVIVORSHIP_PROMPT = "What is survivorship bias?";
   private static final String SAMPLE_RESPONSE =
       "Survivorship bias is the logical error of concentrating on entities that passed a selection process.";
 
-  @Autowired
-  private ApplicationContext applicationContext;
+  @Autowired private ApplicationContext applicationContext;
 
-  @Autowired
-  private Environment environment;
+  @Autowired private Environment environment;
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-  @Autowired
-  private RecordingChatModel recordingChatModel;
+  @Autowired private RecordingChatModel recordingChatModel;
 
-  @Autowired
-  private RecordingVectorStore recordingVectorStore;
+  @Autowired private RecordingVectorStore recordingVectorStore;
 
   private final AtomicReference<String> lastChatResponse = new AtomicReference<>();
   private final AtomicReference<Document> lastDocument = new AtomicReference<>();
@@ -182,7 +175,8 @@ public class ApplicationAndChatSteps {
 
   @Then("each successful response should be logged")
   public void eachSuccessfulResponseLogged() {
-    assertThat(recordingChatModel.countPromptsEqualTo(SURVIVORSHIP_PROMPT)).isGreaterThanOrEqualTo(40);
+    assertThat(recordingChatModel.countPromptsEqualTo(SURVIVORSHIP_PROMPT))
+        .isGreaterThanOrEqualTo(40);
     assertThat(recordingVectorStore.getDocuments().size()).isGreaterThanOrEqualTo(40);
   }
 
@@ -193,7 +187,9 @@ public class ApplicationAndChatSteps {
 
   @Then("the embedding should use dimension {int}")
   public void embeddingUsesDimension(int dimension) {
-    assertThat(environment.getProperty("spring.ai.vectorstore.pgvector.embedding-dimension", Integer.class))
+    assertThat(
+            environment.getProperty(
+                "spring.ai.vectorstore.pgvector.embedding-dimension", Integer.class))
         .isEqualTo(dimension);
   }
 
@@ -206,7 +202,9 @@ public class ApplicationAndChatSteps {
 
   @Then("the virtual thread task executor bean should be available")
   public void virtualThreadTaskExecutorBeanAvailable() {
-    assertThat(applicationContext.getBean(org.springframework.core.task.VirtualThreadTaskExecutor.class))
+    assertThat(
+            applicationContext.getBean(
+                org.springframework.core.task.VirtualThreadTaskExecutor.class))
         .isNotNull();
   }
 }

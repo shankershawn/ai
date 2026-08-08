@@ -1,13 +1,12 @@
 package com.shankarsan.ai.feature.support;
 
-import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.VectorStore;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 
 public class RecordingVectorStore implements VectorStore {
 
@@ -29,8 +28,9 @@ public class RecordingVectorStore implements VectorStore {
   @Override
   public List<Document> similaritySearch(SearchRequest request) {
     return documents.stream()
-        .filter(document -> document.getContent() != null
-            && document.getContent().contains(request.getQuery()))
+        .filter(
+            document ->
+                document.getContent() != null && document.getContent().contains(request.getQuery()))
         .limit(request.getTopK())
         .toList();
   }

@@ -1,5 +1,8 @@
 package com.shankarsan.ai;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,10 +14,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.VirtualThreadTaskExecutor;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @SpringBootApplication
 @RequiredArgsConstructor
@@ -37,16 +36,19 @@ public class AiApplication {
     return args -> {
       List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
 
-      for(int i = 0; i < 40; i++) {
+      for (int i = 0; i < 40; i++) {
         log.info("Calling OpenAI for the {} time", i + 1);
-        completableFutures.add(CompletableFuture.runAsync(() -> {
-          String response = chatModel.call("What is survivorship bias?");
-          log.info("Response from OpenAI: {}", response);
-          vectorStore.add(List.of(new Document(response)));
-        }, virtualThreadTaskExecutor));
+        completableFutures.add(
+            CompletableFuture.supplyAsync(
+                    () -> {
+                      String response = chatModel.call("What is survivorship bias?");
+                      log.info("Response from OpenAI: {}", response);
+                      return response;
+                    },
+                    virtualThreadTaskExecutor)
+                .thenAccept(llmResponse -> vectorStore.add(List.of(new Document(llmResponse)))));
       }
       completableFutures.forEach(CompletableFuture::join);
-
     };
   }
 }

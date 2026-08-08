@@ -13,8 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 public class ActuatorSteps {
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
   private MockHttpServletResponse healthResponse;
 

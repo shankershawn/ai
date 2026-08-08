@@ -1,5 +1,13 @@
 package com.shankarsan.ai;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,32 +20,19 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.core.task.VirtualThreadTaskExecutor;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class AiApplicationTests {
 
   private static final String PROMPT = "What is survivorship bias?";
   private static final String RESPONSE = "A selection-bias fallacy.";
 
-  @Mock
-  private ChatModel chatModel;
+  @Mock private ChatModel chatModel;
 
-  @Mock
-  private VectorStore vectorStore;
+  @Mock private VectorStore vectorStore;
 
-  @Mock
-  private VirtualThreadTaskExecutor virtualThreadTaskExecutor;
+  @Mock private VirtualThreadTaskExecutor virtualThreadTaskExecutor;
 
-  @InjectMocks
-  private AiApplication aiApplication;
+  @InjectMocks private AiApplication aiApplication;
 
   @Test
   void applicationRunnerSubmitsFortyChatAndStoreTasks() throws Exception {
@@ -60,6 +55,11 @@ class AiApplicationTests {
     verify(vectorStore, times(40)).add(documentsCaptor.capture());
     assertThat(documentsCaptor.getAllValues())
         .hasSize(40)
-        .allSatisfy(docs -> assertThat(docs).singleElement().extracting(Document::getContent).isEqualTo(RESPONSE));
+        .allSatisfy(
+            docs ->
+                assertThat(docs)
+                    .singleElement()
+                    .extracting(Document::getContent)
+                    .isEqualTo(RESPONSE));
   }
 }

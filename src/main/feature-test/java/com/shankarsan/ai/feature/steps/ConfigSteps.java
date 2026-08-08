@@ -5,23 +5,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
-
 public class ConfigSteps {
 
-  @Autowired
-  private Environment environment;
+  @Autowired private Environment environment;
 
-  @Autowired
-  private DataSource dataSource;
+  @Autowired private DataSource dataSource;
 
   private StandardEnvironment resolvedEnvironment;
   private String lastEnvVar;
@@ -34,8 +31,7 @@ public class ConfigSteps {
 
   @Given("the Spring datasource URL is configured for H2")
   public void datasourceUrlConfiguredForH2() {
-    assertThat(environment.getProperty("spring.datasource.url"))
-        .startsWith("jdbc:h2:");
+    assertThat(environment.getProperty("spring.datasource.url")).startsWith("jdbc:h2:");
   }
 
   @Given("datasource credentials are provided via environment variables or defaults")
@@ -77,19 +73,24 @@ public class ConfigSteps {
 
   @Then("the embedding dimension should be {int}")
   public void embeddingDimension(int dimension) {
-    assertThat(environment.getProperty("spring.ai.vectorstore.pgvector.embedding-dimension", Integer.class))
+    assertThat(
+            environment.getProperty(
+                "spring.ai.vectorstore.pgvector.embedding-dimension", Integer.class))
         .isEqualTo(dimension);
   }
 
   @Then("schema initialization should be enabled")
   public void schemaInitializationEnabled() {
-    assertThat(environment.getProperty("spring.ai.vectorstore.pgvector.initialize-schema", Boolean.class))
+    assertThat(
+            environment.getProperty(
+                "spring.ai.vectorstore.pgvector.initialize-schema", Boolean.class))
         .isTrue();
   }
 
   @Then("the content size limit should be {int}")
   public void contentSizeLimit(int contentSize) {
-    assertThat(environment.getProperty("spring.ai.vectorstore.pgvector.content-size", Integer.class))
+    assertThat(
+            environment.getProperty("spring.ai.vectorstore.pgvector.content-size", Integer.class))
         .isEqualTo(contentSize);
   }
 
@@ -113,7 +114,8 @@ public class ConfigSteps {
 
   @Then("the OpenAI embedding model should be {string}")
   public void openAiEmbeddingModelShouldBe(String model) {
-    assertThat(environment.getProperty("spring.ai.openai.embedding.options.model")).isEqualTo(model);
+    assertThat(environment.getProperty("spring.ai.openai.embedding.options.model"))
+        .isEqualTo(model);
   }
 
   @Then("the retry max attempts should be {int}")
@@ -124,12 +126,14 @@ public class ConfigSteps {
 
   @Then("client error retries should be disabled")
   public void clientErrorRetriesDisabled() {
-    assertThat(environment.getProperty("spring.ai.retry.on-client-errors", Boolean.class)).isFalse();
+    assertThat(environment.getProperty("spring.ai.retry.on-client-errors", Boolean.class))
+        .isFalse();
   }
 
   @Then("the retry backoff initial interval should be {string}")
   public void retryBackoffInitialInterval(String interval) {
-    assertThat(environment.getProperty("spring.ai.retry.backoff.initial-interval")).isEqualTo(interval);
+    assertThat(environment.getProperty("spring.ai.retry.backoff.initial-interval"))
+        .isEqualTo(interval);
   }
 
   @Then("the retry backoff multiplier should be {int}")

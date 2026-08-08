@@ -17,5 +17,4 @@ import org.springframework.test.context.ActiveProfiles;
 @AutoConfigureMockMvc
 @ActiveProfiles("feature-test")
 @Import(FeatureTestConfiguration.class)
-public class CucumberSpringConfiguration {
-}
+public class CucumberSpringConfiguration {}

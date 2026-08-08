@@ -15,5 +15,4 @@ import org.junit.platform.suite.api.Suite;
 @ConfigurationParameter(
     key = PLUGIN_PROPERTY_NAME,
     value = "pretty, html:build/reports/cucumber/report.html")
-public class RunCucumberTest {
-}
+public class RunCucumberTest {}
